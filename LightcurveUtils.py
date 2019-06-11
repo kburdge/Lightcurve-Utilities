@@ -34,7 +34,7 @@ def BJDConvert(times, RA, Dec, date_format='mjd', telescope='Palomar'):
 
 	return BJD_TDB
 
-"Function which phase folds lightcurve given a period P, period derivative Pdot, and reference epoch t0"
+"Function which returns phases corresponding to timestamps in a lightcurve given a period P, period derivative Pdot, and reference epoch t0"
 
 def PhaseFold(times, P, Pdot=0, t0=0):
 
