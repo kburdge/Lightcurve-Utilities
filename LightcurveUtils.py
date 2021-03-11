@@ -47,3 +47,23 @@ def PhaseFold(times, P, Pdot=0, t0=0):
 	phases=((times-1/2*Pdot/P*(times)**2) % P)/P
 
 	return phases
+
+"Weighted binning of a lightcurve with times t, fluxes y, and flux errors dy, at period p with N bins."
+
+def binning(t,y,dy,p,N=500):
+    binned_LC=[]
+    mean_phases=np.linspace(0,1-1/N,N)
+    phases=(t%p)/p
+    lightcurve=np.array((phases,y,dy)).T
+    lightcurve=lightcurve[np.argsort(lightcurve[:,0])]
+    for i in mean_phases:
+        lightcurve_bin=lightcurve[lightcurve[:,0]>i]
+        lightcurve_bin=lightcurve_bin[lightcurve_bin[:,0]<i+1/N]
+        weights=1/(lightcurve_bin[:,2]**2)
+        weighted_mean_flux=np.sum(lightcurve_bin[:,1]*weights)/np.sum(weights)
+        weighted_mean_flux_error=np.sqrt(1/np.sum(weights))
+        binned_LC.append((i+0.5/N,weighted_mean_flux,weighted_mean_flux_error))
+    binned_LC=np.array(binned_LC)
+    binned_LC[:,2]=binned_LC[:,2]/np.median(binned_LC[:,1])
+    binned_LC[:,1]=binned_LC[:,1]/np.median(binned_LC[:,1])
+    return binned_LC
